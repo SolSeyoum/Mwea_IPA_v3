@@ -51,33 +51,33 @@ try:
     col = st.columns((5.5, 2.5), gap='small')
     with col[0]:
         st.markdown(f"### Mwea IPA Raster Viewer")
-        # with st.spinner("Loading and processing data..."):
+        with st.spinner("Loading and processing data..."):
         #         
-        # Process clicked locations and display map
-        if map_data := st_folium(cm.create_folium_map(data, geo, bounds, crs, variable), height=500, use_container_width=True):
-
-            # Process Click Event
-            if map_data and "last_clicked" in map_data and map_data["last_clicked"] != None :
-                lat, lon = map_data["last_clicked"]["lat"], map_data["last_clicked"]["lng"]
-
-                clicked_coords = Point(lon, lat,)
-                
-                if gdf.contains(clicked_coords).any():
-                    # Avoid duplicates
-                    if (lat, lon) not in st.session_state.clicked_locations:
-                        st.session_state.clicked_locations.append((lat, lon))
-                        st.rerun()  # Rerun only when a new point is added
-                else:
-                    st.write("Please click within the raster layer.")
-
-            # **Display all extracted values**
-            locations = st.session_state.clicked_locations
-            if locations:
-                data_all_points = cm.extraxt_ts(data_var, locations)
-
-                if(len(data_all_points) > 0):
-                    chart = cm.alt_line_chart(data_all_points, variable)
-                    st.altair_chart(chart, use_container_width=True)
+                # Process clicked locations and display map
+                if map_data := st_folium(cm.create_folium_map(data, geo, bounds, crs, variable), height=500, use_container_width=True):
+        
+                    # Process Click Event
+                    if map_data and "last_clicked" in map_data and map_data["last_clicked"] != None :
+                        lat, lon = map_data["last_clicked"]["lat"], map_data["last_clicked"]["lng"]
+        
+                        clicked_coords = Point(lon, lat,)
+                        
+                        if gdf.contains(clicked_coords).any():
+                            # Avoid duplicates
+                            if (lat, lon) not in st.session_state.clicked_locations:
+                                st.session_state.clicked_locations.append((lat, lon))
+                                st.rerun()  # Rerun only when a new point is added
+                        else:
+                            st.write("Please click within the raster layer.")
+        
+                    # **Display all extracted values**
+                    locations = st.session_state.clicked_locations
+                    if locations:
+                        data_all_points = cm.extraxt_ts(data_var, locations)
+        
+                        if(len(data_all_points) > 0):
+                            chart = cm.alt_line_chart(data_all_points, variable)
+                            st.altair_chart(chart, use_container_width=True)
     with col[1]:
             st.write('')
             st.markdown(f"##### :blue[Stats of {indicator} [{cm.units[indicator]}]]")
