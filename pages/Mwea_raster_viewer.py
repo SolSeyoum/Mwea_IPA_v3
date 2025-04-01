@@ -78,10 +78,10 @@ try:
                         if(len(data_all_points) > 0):
                             chart = cm.alt_line_chart(data_all_points, variable)
                             st.altair_chart(chart, use_container_width=True)
-    with col[1]:
-            st.write('')
-            st.markdown(f"##### :blue[Stats of {indicator} [{cm.units[indicator]}]]")
-            st.dataframe(df_stats, use_container_width=True)
+                    with col[1]:
+                            st.write('')
+                            st.markdown(f"##### :blue[Stats of {indicator} [{cm.units[indicator]}]]")
+                            st.dataframe(df_stats, use_container_width=True)
             
 except Exception as e:
         st.error(f"An error occurred while processing the data: {str(e)}")
