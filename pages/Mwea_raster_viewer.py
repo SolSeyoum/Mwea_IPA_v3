@@ -33,8 +33,8 @@ cm.set_page_container_style(
 dfm, geo = cm.read_df_and_geo()
 logo_small, logo_wide = cm.logos()
 
-ipa_ds_path = r"d:\Codes\misc\IPA_dashboard_v2_foluim\data\Mwea_ipa_results.nc"
-shp_path = r"d:\Codes\misc\IPA_dashboard_v2_foluim\data\Mwea_blocks2.json"
+ipa_ds_path = r"data/Mwea_ipa_results.nc"
+shp_path = r"data/Mwea_blocks2.json"
 
 
 with st.sidebar:
