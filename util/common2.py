@@ -117,56 +117,7 @@ def set_page_container_style(
         st.markdown(hide_github_icon, unsafe_allow_html=True)
 
         #######################
-        # # CSS styling
-        # st.markdown("""
-        # <style>
 
-        # [data-testid="block-container"] {
-        #     padding-left: 1rem;
-        #     padding-right: 0rem;
-        #     padding-top: 01rem;
-        #     padding-bottom: 0rem;
-        #     margin-bottom: -7rem;
-        # }
-
-        # [data-testid="stVerticalBlock"] {
-        #     padding-left: 0rem;
-        #     padding-right: 0rem;
-        # }
-
-        # [data-testid="stMetric"] {
-        #     background-color: #1c1b1b;
-        #     text-align: center;
-        #     padding: 0px 0;
-        # }
-
-        # [data-testid="stMetricLabel"] {
-        # display: flex;
-        # justify-content: center;
-        # align-items: center;
-        # }
-
-        # [data-testid="stMetricDeltaIcon-Up"] {
-        #     position: relative;
-        #     left: 38%;
-        #     -webkit-transform: translateX(-50%);
-        #     -ms-transform: translateX(-50%);
-        #     transform: translateX(-50%);
-        # }
-
-        # [data-testid="stMetricDeltaIcon-Down"] {
-        #     position: relative;
-        #     left: 38%;
-        #     -webkit-transform: translateX(-50%);
-        #     -ms-transform: translateX(-50%);
-        #     transform: translateX(-50%);
-        # }
-                    
-        # img[data-testid="stLogo"] {
-        #             height: 4.5rem;
-        # }
-        # </style>
-        # """, unsafe_allow_html=True)
 # Load data
 @st.cache_data(ttl=300)
 def read_df_and_geo():
