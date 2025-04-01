@@ -3,19 +3,19 @@ import pandas as pd
 import altair as alt
 import json
 from PIL import Image
-# import plotly.express as px
-# import plotly.graph_objects as go
 import json
 from shapely.geometry import Polygon, mapping
 from shapely.ops import unary_union
+import geopandas as gpd
 
 import folium
 from folium.features import GeoJsonTooltip
 from folium.plugins import Fullscreen
-# from streamlit_folium import st_folium
-# from branca.colormap import LinearColormap
-# from folium.raster_layers import ImageOverlay, TileLayer
+from pyproj import Transformer
+from folium.raster_layers import ImageOverlay
+
 import branca
+from branca.colormap import LinearColormap
 
 import numpy as np
 import xarray as xr
@@ -587,45 +587,6 @@ def alt_line_chart(df, indicator):
     return chart
 
 
-def get_image_from_ds(data, minv, maxv, nodata, colors):
-    try:
-        # Apply scale factor
-        data = np.nan_to_num(data, nan=-9999)
-        data = np.flip(data,0)
-        data = data.astype(float)
-        
-        # Create a custom colormap
-        n_bins = 10
-        cmap = mcolors.LinearSegmentedColormap.from_list("custom", colors, N=n_bins)
-        
-        # Normalize data
-        vmin, vmax = minv, maxv
-        norm = mcolors.Normalize(vmin=vmin, vmax=vmax)
-
-        # Apply colormap to data
-        colored_data = cmap(norm(data))
-        
-        # Set alpha channel to 0 for no-data values
-        colored_data[..., 3] = np.where(data == nodata, 0, 0.9)
-        
-        # Convert to PIL Image
-        img = Image.fromarray((colored_data * 255).astype(np.uint8))
-    
-        # Save image to bytes
-        img_bytes = io.BytesIO()
-        img.save(img_bytes, format='PNG')
-        img_bytes.seek(0)
-        
-        # Encode image to base64
-        img_base64 = base64.b64encode(img_bytes.getvalue()).decode()
-
-        return img_base64
-    
-    except Exception as e:
-        st.error(f"An error occurred while processing the data: {str(e)}")
-        st.write("Debug information:")
-        st.write(f"Data shape: {data.shape}")
-
 @st.cache_data
 def read_dataset(ds_path):
     with xr.open_dataset(ds_path) as dataset:  
@@ -659,3 +620,132 @@ def get_stats(_data):
                                     orient='index', columns = ['Values']).round(2)
     df_stat.index.names = ['Stats']
     return df_stat
+
+
+# Efficient function to get image data for overlay
+def get_image_from_ds(data, minv, maxv, nodata, colors):
+
+    try:
+        data = np.nan_to_num(data, nan=nodata)
+        data = np.flip(data, 0).astype(float)
+        
+        # Normalize and apply colormap
+        norm = mcolors.Normalize(vmin=minv, vmax=maxv)
+        cmap = mcolors.LinearSegmentedColormap.from_list("custom", colors, N=100)
+        colored_data = cmap(norm(data))
+        
+        # Set alpha channel for no-data values
+        colored_data[..., 3] = np.where(data == nodata, 0, 0.9)
+        
+        # Convert to PIL image and then to base64
+        img = Image.fromarray((colored_data * 255).astype(np.uint8))
+        img_bytes = io.BytesIO()
+        img.save(img_bytes, format='PNG')
+        img_bytes.seek(0)
+        return base64.b64encode(img_bytes.getvalue()).decode()
+    
+    except Exception as e:
+        st.error(f"Error processing data: {str(e)}")
+
+    
+# Function to extract time series in a vectorized way
+def extract_time_series(da, locations):
+    lats, lons = zip(*locations)
+    ts = da.sel(lat=list(lats), lon=list(lons), method="nearest")
+    return ts.to_dataframe().reset_index()
+
+# Efficient Folium Map Initialization
+def create_folium_map( data, geo, bounds, crs, variable):
+    # Calculate map center
+    left, bottom, right, top = bounds
+    transformer = Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
+    left, bottom = transformer.transform(left, bottom)
+    right, top = transformer.transform(right, top)
+
+    # Initialize map
+    m = create_base_map((bottom + top) / 2, (left + right) / 2, 12)
+
+    minv = data.min()
+    maxv = data.max()
+
+    # colors = ['red', 'orange', 'gold', 'yellow', 'greenyellow', 'lawngreen', 'green']
+    colors = ['red', 'yellow',  'green']
+     # Add the color map legend
+    colormap = LinearColormap(colors=colors, vmin=minv, vmax=maxv)
+    colormap.add_to(m)
+    colormap.caption = f"{variable} Values"
+    
+    # Prepare image overlay
+    img_base64 = get_image_from_ds(data, minv, maxv, -9999, colors)
+    ImageOverlay(
+        name=f"{variable.replace('_', ' ')}".title(),
+        image=f"data:image/png;base64,{img_base64}",
+        bounds=[[bottom, left], [top, right]],
+        opacity=0.9,
+    ).add_to(m)
+
+        # Add the polygons
+    geo_layer = folium.GeoJson(
+        geo,
+        name="irrigation divisions",
+        style_function=lambda feature: {
+            'fillColor': '#00000000', 
+            'color': 'black',
+            "weight": 0.5,
+        },
+    ).add_to(m)
+
+    tooltip_choropleth = GeoJsonTooltip(
+            fields=['section_name', 'block'],
+            aliases=["Section: ", "Block: "],
+            localize=True,
+            sticky=False,
+            labels=True,
+            smooth_factor=0,
+            style="""
+                background-color: #F0EFEF;
+                border: 1px solid black;
+                border-radius: 3px;
+                box-shadow: 3px;
+                font-size: 12px;
+                font-weight: normal;
+            """,
+            max_width=750,
+        )
+    geo_layer.add_child(tooltip_choropleth)
+
+    m.fit_bounds(geo_layer.get_bounds())  # 2. fit the map to GeoJSON layer
+    # Add Click event
+    click_marker = folium.Marker(
+        location=[0, 0],  # Default position (hidden initially)
+        popup="Click on the map",
+        icon=folium.Icon(color="red")
+    )
+    m.add_child(click_marker)
+
+    # JavaScript for click event
+    m.add_child(folium.LatLngPopup())  # Shows lat/lon on click
+
+    # Add markers for all clicked locations
+    for idx, (lat, lon) in enumerate(st.session_state.clicked_locations):
+        folium.Marker([lat, lon], popup=f"Point {idx + 1}: lat: {lat:.4f}, lon: {lon:.4f}", 
+                    icon=folium.Icon(color="red")).add_to(m)
+        
+        # Label marker (positioned slightly above the main marker)
+        folium.Marker(
+            location=[lat, lon],  # Slightly shift the label upwards
+            icon=folium.DivIcon(
+                icon_size=(50,50),
+                icon_anchor=(3,17),
+                html=f'<div style="font-size: 24ptpx;font-weight: bold; color: white;">{idx + 1}</div>'
+            ),
+            zIndexOffset=1000 
+        ).add_to(m)
+
+    folium.LayerControl().add_to(m)
+    
+    return m
+
+@st.cache_data
+def get_gdf_from_json(geo):
+     return gpd.GeoDataFrame.from_features(geo['features'])
