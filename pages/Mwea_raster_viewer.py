@@ -54,7 +54,7 @@ try:
         # with st.spinner("Loading and processing data..."):
         #         
         # Process clicked locations and display map
-        if map_data := st_folium(cm.create_folium_map(data, geo, bounds, crs, variable), height=500, width=700):
+        if map_data := st_folium(cm.create_folium_map(data, geo, bounds, crs, variable), height=500, use_container_width=True):
 
             # Process Click Event
             if map_data and "last_clicked" in map_data and map_data["last_clicked"] != None :
