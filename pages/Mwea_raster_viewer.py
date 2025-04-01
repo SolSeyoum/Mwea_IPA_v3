@@ -56,8 +56,8 @@ try:
                 # Process clicked locations and display map
                 if map_data := st_folium(cm.create_folium_map(data, geo, bounds, crs, variable), height=500, use_container_width=True):
         
-                    # Process Click Event
-                    if map_data and "last_clicked" in map_data and map_data["last_clicked"] != None :
+                    # Process Click Event                            
+                    if map_data.get("last_clicked"):
                         lat, lon = map_data["last_clicked"]["lat"], map_data["last_clicked"]["lng"]
         
                         clicked_coords = Point(lon, lat,)
