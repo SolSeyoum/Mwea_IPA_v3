@@ -65,7 +65,6 @@ with st.sidebar:
        
     st.write(f'{cm.IPA_description[indicator]}')
     stat_description = cm.stat_dict[selected_stat]
-    st.write(f'{stat_description}')
    
 
     df_selected = dfm[dfm.year == selected_year][['section_name', selected_indicator]]
