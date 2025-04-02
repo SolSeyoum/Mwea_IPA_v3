@@ -15,7 +15,7 @@ from pyproj import Transformer
 from folium.raster_layers import ImageOverlay
 
 import branca
-from branca.colormap import LinearColormap
+from branca.colormap import LinearColormap, StepColormap
 
 import numpy as np
 import xarray as xr
