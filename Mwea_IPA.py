@@ -74,7 +74,16 @@ with st.sidebar:
     df_section=df_selected_sorted.groupby('section_name').agg({selected_indicator:'mean'})#.rename(columns=d)
     df_section = df_section.sort_values(by=selected_indicator, ascending=False).reset_index()
 
+    st.markdown("---")
+    with st.expander("ℹ️ About the Indicator Map"):
+        st.markdown("""
+        This Indicator Map provides view of the Irrigation Performance Indicators per section and blocks. The default view is per section. when a section is clicked, it will zoom in to show the selected indicator by blocks.
+        
+        - Year/Season, and indicator type and statistic type can be selected to view the indicator selected by year/season and by statistics type.
+        - 📊 The bar chart on the right side shows the indicator for the selected year for the section or the block depending on which view is on the indicator map sorted by the selected indicator.                             
+        - 📈 The timeseries plot below the map shows the trend over the years (seasons) for the selected indicator.
 
+        """)
 
 
 #######################
