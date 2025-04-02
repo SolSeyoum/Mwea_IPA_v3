@@ -162,13 +162,15 @@ def merge_blocks_to_sections(geo, df_section):
     return sections
 
 
-def make_folium_choropleth(geo, indicator, df, col_name, year, unit):
+def make_folium_choropleth(geo, indicator, df, col_name):
     df = df.round(2)
     ylable, text = indicator_title(indicator, stat_dict)
-    # col_name = df.columns[0]  # Assume first column contains the location IDs
     
     # Convert DataFrame to dictionary for mapping
-    data_dict = df.set_index(col_name)[indicator].to_dict()
+    data_df = df.set_index(col_name)[indicator]
+
+    # Convert DataFrame to dictionary for fast lookup
+    data_dict = data_df.to_dict()
 
       # Add ESRI aerial imagery tile layer
     esri = folium.TileLayer(
@@ -179,7 +181,7 @@ def make_folium_choropleth(geo, indicator, df, col_name, year, unit):
         control=True
     )#.add_to(m)
     
-    # Initialize map centered at a specific location
+
     m = folium.Map(location=[-0.69306, 37.35908], 
                    zoom_start=12, height=300, width=400,
                     tiles=esri,  # Add ESRI arial imagery as default tile layer 
@@ -188,14 +190,16 @@ def make_folium_choropleth(geo, indicator, df, col_name, year, unit):
 
     # Add OSM map
     folium.TileLayer("OpenStreetMap", name="OSM", control=True).add_to(m)
-
     # # bounds = get_bounds(geo)
-    min = df[indicator].min()
-    max = df[indicator].max()
-    color_scale = branca.colormap.linear.YlGnBu_09.scale(min, max)  # Define range
+    minv = df[indicator].min()
+    maxv = df[indicator].max()
 
-    
-
+    # Define a custom color scale
+    colormap = StepColormap(
+        ["#ff0000", "#ff4500", "#ff7f50", "#ffb347", "#ffdd44", 
+        "#ccff33", "#99ff33", "#66ff33", "#33cc33", "#009933"], 
+        vmin=minv, vmax=maxv, caption="colormap"
+    )
     # Update geojson for tooltip
     for feature in geo["features"]:
         region_id = feature["properties"].get(col_name)  # Get region ID from GeoJSON
@@ -214,36 +218,35 @@ def make_folium_choropleth(geo, indicator, df, col_name, year, unit):
         geo["ch_name"] = "Mwea Sections"
     
     # Add Choropleth layer
-    choropleth = folium.Choropleth(
-        geo_data=geo,  # GeoJSON file or dictionary
+    tooltip=folium.GeoJsonTooltip(
+            fields=fields,#[col_name, indicator],
+            aliases=aliases,#["Section:", f"{ylable}:"],
+            localize=True,
+            sticky=False,
+            labels=True,
+            style="""
+                background-color: #F0EFEF;
+                border: 1px solid black;
+                border-radius: 3px;
+                box-shadow: 3px;
+                font-size: 12rem;
+                font-weight: normal;
+            """,
+            max_width=750,
+            html=True  # Enables HTML in the tooltip
+        )
+    
+    choropleth = folium.GeoJson(
+        geo,
         name=geo["ch_name"],
-        data=df,
-        columns=[col_name, indicator],
-        key_on=f"feature.properties.{col_name}",
-        fill_color="YlGnBu",
-        fill_opacity=0.9,
-        line_opacity=0.2,
-        legend_name=f"{text} for year {year} ({unit})",
+        tooltip=tooltip,
+        style_function=lambda feature: {
+            "fillColor": colormap(data_dict[feature["properties"].get(col_name)]),
+            "color": "black",
+            "weight": 0.5,
+            "fillOpacity": 0.7
+        },
     ).add_to(m)
-    # Define the tooltips
-    tooltip_choropleth = GeoJsonTooltip(
-        fields=fields,#[col_name, indicator],
-        aliases=aliases,#["Section:", f"{ylable}:"],
-        localize=True,
-        sticky=False,
-        labels=True,
-        smooth_factor=0,
-        style="""
-            background-color: #F0EFEF;
-            border: 1px solid black;
-            border-radius: 3px;
-            box-shadow: 3px;
-            font-size: 12px;
-            font-weight: normal;
-        """,
-        max_width=750,
-    )
-    choropleth.geojson.add_child(tooltip_choropleth)
 
     # Add Click event
     click_marker = folium.Marker(
@@ -252,28 +255,14 @@ def make_folium_choropleth(geo, indicator, df, col_name, year, unit):
         icon=folium.Icon(color="red")
     )
     m.add_child(click_marker)
-
-    # JavaScript for click event
-    # m.add_child(folium.LatLngPopup())  # Shows lat/lon on click
-
            
     folium.LayerControl().add_to(m)
-    folium.plugins.Fullscreen().add_to(m)
-    # folium.LayerControl(position='topright').add_to(m)
-    # choropleth.add_to(m)   
+    folium.plugins.Fullscreen().add_to(m)   
     bounds = choropleth.get_bounds()  # Automatically calculates min/max lat/lon
 
     # Fit map to bounds
     m.fit_bounds(bounds)
-
-
-    # m.render() # to trigger the script
-    # m.get_root().script = folium.Element(
-    #     m.get_root().script.render().replace("topright", "bottomleft")
-    # )
-
     return m
-
 
 # histogram plot
 def make_alt_chart(df,indicator):
