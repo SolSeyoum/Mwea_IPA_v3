@@ -128,8 +128,7 @@ else:
     
 # if(selected_section == 'All'):
 # st.write(st.session_state.selected_block)
-choropleth = cm.make_folium_choropleth(geo2plot,selected_indicator, df_map, 
-                                       col_name, selected_year, units[indicator] )
+choropleth = cm.make_folium_choropleth(geo2plot,selected_indicator, df_map, col_name)
 line_chart, title = cm.make_alt_linechart(df_chart, selected_indicator, col_name, 
                                    selected_year, st.session_state.selected_block)
 title = f'<p style="font:Courier; color:gray; font-size: 20px;">{title}</p>'
