@@ -77,26 +77,21 @@ try:
             # Process Click Event
             if map_data["last_clicked"] and map_data["last_clicked"] != st.session_state.last_clicked:
                 lat, lon = map_data["last_clicked"]["lat"], map_data["last_clicked"]["lng"]
-
-                clicked_coords = Point(lon, lat,)
                 
-                if gdf.contains(clicked_coords).any():
-                    # Avoid duplicates
-                    if (lat, lon) not in st.session_state.clicked_locations:
-                        st.session_state.last_clicked = map_data["last_clicked"]
-                        st.session_state.clicked_locations.append((lat, lon))
-                        st.rerun()  # Rerun only when a new point is added
+                if (lat, lon) not in st.session_state.clicked_locations:
+                    st.session_state.last_clicked = map_data["last_clicked"]
+                    st.session_state.clicked_locations.append((lat, lon))
+                        # st.rerun()  # Rerun only when a new point is added
                         
-                else:
-                    st.write("Please click within the raster layer.")
+        filtered_markers = cm.filter_points_within_polygon(st.session_state.clicked_locations, gdf)
+         
+        if len(filtered_markers) > 0 and not st.session_state.button_clicked:
 
-            if st.session_state.clicked_locations and not st.session_state.button_clicked:
-
-                st.markdown("---")
-                if st.button("📈 Generate Time Series"):
-                    st.session_state.time_series_generated = True
-                    st.session_state.button_clicked = True
-                    st.rerun()
+            st.markdown("---")
+            if st.button("📈 Generate Time Series"):
+                st.session_state.time_series_generated = True
+                st.session_state.button_clicked = True
+                st.rerun()
 
     with col[1]:
             st.write('')
