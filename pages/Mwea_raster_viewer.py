@@ -111,7 +111,7 @@ try:
         
 
         if(len(data_all_points) > 0):
-            chart = cm.alt_line_chart(data_all_points, variable)
+            chart, title = cm.alt_line_chart(data_all_points, variable)
             title = f'<p style="font:Courier; color:gray; font-size: 20px;">{title}</p>'
             st.markdown(title, unsafe_allow_html=True)
             st.altair_chart(chart, use_container_width=True)
