@@ -196,10 +196,10 @@ with col[1]:
 
     st.altair_chart(chart, use_container_width=True)
 
-    with st.expander('About', expanded=False):
-            st.write('''
-                - Irrigation Performance Indicators are calculated from data: [FAO WaPOR data](https://www.fao.org/in-action/remote-sensing-for-water-productivity/wapor-data/en).
-                - :orange[**Indicator Map**]: Shows the irrigation schemes section or blocks values for the selected indicator and selected statistics.
-                - :orange[**Bar Chart**]: shows the selected  indicator for the selected year for the section or the block depending on which view is on the indicator map.
-                - :orange[**Line Chart**]: shows the trend over the years (seasons) for the selected  indicator. The clicked block is drawn in red and the rest in grey color.
-                ''')
+    # with st.expander('About', expanded=False):
+    #         st.write('''
+    #             - Irrigation Performance Indicators are calculated from data: [FAO WaPOR data](https://www.fao.org/in-action/remote-sensing-for-water-productivity/wapor-data/en).
+    #             - :orange[**Indicator Map**]: Shows the irrigation schemes section or blocks values for the selected indicator and selected statistics.
+    #             - :orange[**Bar Chart**]: shows the selected  indicator for the selected year for the section or the block depending on which view is on the indicator map.
+    #             - :orange[**Line Chart**]: shows the trend over the years (seasons) for the selected  indicator. The clicked block is drawn in red and the rest in grey color.
+    #             ''')
