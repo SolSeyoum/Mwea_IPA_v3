@@ -392,7 +392,7 @@ def make_alt_linechart(df, indicator, col_name, year, selected_block):
         df_sorted = move_rows_to_top(df, 'block', selected_block).iloc[::-1]
                
         chart = alt.Chart(df_sorted).mark_line(size=3).encode(
-            x=alt.X('year:T',title='Year'), 
+            x=alt.X('year:T',title='Year', axis=alt.Axis(tickCount="year")), 
             y=alt.Y(f'{indicator}:Q',title=y_title, scale=alt.Scale(domain=[min_value, max_value])),
             color=alt.Color(f'{col_name}:N', title = area_id,  legend=alt.Legend(orient="top")),
             opacity=alt.condition(
@@ -420,7 +420,7 @@ def make_alt_linechart(df, indicator, col_name, year, selected_block):
         return chart, plot_title
     else:
         chart = alt.Chart(df).mark_line().encode(
-            x=alt.X('year:T',title='Year'),  
+            x=alt.X('year:T',title='Year', axis=alt.Axis(tickCount="year")),  
             y=alt.Y(f'{indicator}:Q',title=y_title, scale=alt.Scale(domain=[min_value, max_value])),
             color=alt.Color(f'{col_name}:N', title = area_id,  legend=alt.Legend(orient="top")),
 
@@ -504,7 +504,7 @@ def alt_line_chart(df, indicator):
     minv = data['value'].min()
     maxv = data['value'].max()
     chart = alt.Chart(data).mark_line().encode(
-            x=alt.X('time:T',title='Year'),  
+            x=alt.X('time:T',title='Year', axis=alt.Axis(tickCount="year")),  
             y=alt.Y(f'value:Q', title=y_title, scale=alt.Scale(domain=[minv*0.9, maxv*1.1])),
             color=alt.Color(f'variable:N',  title='Point', legend=alt.Legend(orient="right")),
 
