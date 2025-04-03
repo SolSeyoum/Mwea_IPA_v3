@@ -514,17 +514,18 @@ def alt_line_chart(df, indicator):
                 alt.Tooltip(f'{indicator}:Q', title=indicator, format='.2f'),  # Format Value as decimal with 2 digits
             ]
         ).properties(
-            width=700, height=300, title=plot_title
+            # title=plot_title,
+            height=300, 
+            bounds="flush",  # Ensures title does not affect chart size
+        ).configure_view(
+            continuousWidth=600,  # Default width to avoid shrinking
+            continuousHeight=300
+        ).configure(
+            autosize="fit",  # Ensures it resizes correctly
         )
-    
-    chart = chart.configure_title(    # <----- this is the only difference
-        fontSize=20,
-        font='Courier',
-        anchor='start',
-        color='gray'
-    )
-    
-    return chart
+
+    return chart, plot_title
+
 
 
 @st.cache_data
