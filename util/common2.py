@@ -4,7 +4,7 @@ import altair as alt
 import json
 from PIL import Image
 import json
-from shapely.geometry import Polygon, mapping
+from shapely.geometry import Polygon, mapping, Point
 from shapely.ops import unary_union
 import geopandas as gpd
 
