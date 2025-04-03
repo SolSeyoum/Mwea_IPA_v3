@@ -691,6 +691,7 @@ def create_folium_map( data, geo, bounds, crs, variable):
 def get_gdf_from_json(geo):
      return gpd.GeoDataFrame.from_features(geo['features'])
 
+
 def filter_points_within_polygon(points, polygon):
     """Filter points that lie within the given polygon."""
     # Create GeoSeries for points
