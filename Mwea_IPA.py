@@ -77,11 +77,12 @@ with st.sidebar:
     st.markdown("---")
     with st.expander("ℹ️ About the Indicator Map"):
         st.markdown("""
-        This Indicator Map provides view of the Irrigation Performance Indicators per section and blocks. The default view is per section. when a section is clicked, it will zoom in to show the selected indicator by blocks.
-        
+        This Indicator Map provides view of the Irrigation Performance Indicators (IPA) for Mwea Irrigation Scheme.
+        - IPAs are calculated using data from: [FAO WaPOR data](https://www.fao.org/in-action/remote-sensing-for-water-productivity/wapor-data/en).
+        - :orange[**Indicator Map**]: Shows the irrigation schemes section or blocks values for the selected indicator and selected statistics.      
         - Year/Season, and indicator type and statistic type can be selected to view the indicator selected by year/season and by statistics type.
-        - 📊 The bar chart on the right side shows the indicator for the selected year for the section or the block depending on which view is on the indicator map sorted by the selected indicator.                             
-        - 📈 The timeseries plot below the map shows the trend over the years (seasons) for the selected indicator.
+        - 📊 :orange[**Bar Chart**]: on the right side shows the indicator for the selected year for the section or the block depending on which view is on the indicator map sorted by the selected indicator.                             
+        - 📈 :orange[**Line Chart**]: or the timeseries plot below the map shows the trend over the years (seasons) for the selected indicator.
 
         """)
 
