@@ -156,7 +156,7 @@ with col[0]:
             if st.button("🔄 Reset Map"):
                 st.session_state.selected_block = None
                 reset_map()
-    with left:
+                    
     map_data = st_folium(choropleth,  height=450, use_container_width=True)
     
     # st.write(map_data)
