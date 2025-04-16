@@ -148,7 +148,8 @@ with col[0]:
 
     left, right = st.columns([0.7, 0.3])
     # left, right = st.columns((6, 2), gap='medium')
-    st.markdown("### Indicator Map")
+    with left:
+            st.markdown("### Indicator Map")
 
     with right:
         st.markdown("<div style='margin-top: 12px;'>", unsafe_allow_html=True) 
