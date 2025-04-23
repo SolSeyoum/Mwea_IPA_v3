@@ -183,7 +183,7 @@ def make_folium_choropleth(geo, indicator, df, col_name):
     
 
     m = folium.Map(location=[-0.69306, 37.35908], 
-                   zoom_start=12, height=300, width=400,
+                   zoom_start=12, height=300, width= '100%',
                     tiles=esri,  # Add ESRI arial imagery as default tile layer 
   
     )
@@ -229,7 +229,7 @@ def make_folium_choropleth(geo, indicator, df, col_name):
                 border: 1px solid black;
                 border-radius: 3px;
                 box-shadow: 3px;
-                font-size: 12rem;
+                font-size: 12px;
                 font-weight: normal;
             """,
             max_width=750,
